@@ -1,1 +1,58 @@
+CAPTURA Nº 0:
+En esta parte del codigo primero definimos variables para:
+• Bloque actual: Indica en que parte de la lista de bloques estamos y cual se esta ejecutando
+• Indice ejecutar: Guardar el numero de index de la lista 
+• Lista Bloques: Creamos una lista vacia donde vamos a poner todos los bloques que se van ejecutar 
+• Contador: Un contador para darle a cada bloque una id unica 
+
+CAPTURA Nº 1:
+Esta parte del codigo es la que se ejecuta al iniciar la pantalla de programacion de la App
+Lo que hacemos es configurar un temporizador que llega hasta 1s 
+Luego Registramos todos los bloques para poder arrastrarlos y su respectivo nombre
+Incluyendo tambien el Contenedor (Arragement) donde se van a soltar los bloques
+
+CAPTURA Nº 2:
+Al apretar en la imagen2 (icono casa) se vuelve al menu principal.
+Lo que hacemos con el list picker es esto:
+primero hacemos que antes de abrirlo carga todos los componentes bluetooth registrados en el telefono
+para que al que selecciones el celular se trate de conectar
+SI PASA
+se vuelve invisible el list picker y la imagen del bluetooth se pone en verde
+SINO 
+se muestra un texto que dice que hubo un error en la conexion
+
+CAPTURA Nº 3:
+Cuando un bloque es arrastrado y lo soltas en el contenedor se ejecuta lo siguiente
+Primero se ve el nombre del bloque arrastrado para poder identificarlo aumentado en +1 el contador
+Mueve el bloque original a el contenedor de origen para que no se mueva
+Luego se crea una copia de ese boton en el contenedor donde fue arrastrado 
+Dandole al mismo un id unico para poder identificarlo
+Se le dan las propiedades del bloque original como el texto que tiene dentro, el color,tamaño,etc
+Donde al final se agrega a la lista bloques 
+
+ESTE PROCESO SE DEBERA REPETIR CON TODOS LOS BLOQUES QUE HAYAMOS HECHO
+
+CAPTURA Nº 4:
+Al apretar ejecutar se comprueba si el bluetooth esta conectado
+Verifica si la lista esta vacia y confirma si el inicio esta al principio de la programacion
+SINO CUMPLE ALGUNA DE ESTAS COSAS 
+Se muestra un mensaje de error detallando el porque no se va a ejecutar el programa
+SI CUMPLE TODOS LOS REQUISITOS
+Entonces pone el indice ejecutar en 2 para que se ejecute todo menos el Inicio y activa el temporizador
+Para darle a cada bloque un tiempo de espera entre si
+
+CAPTURA Nº 5:
+Cada vez que pase 1s compara si el indice supero a la cantidad de bloques que estan en la lista
+SI SUPERO LA LONGITUD
+El programa se detiene indicando que ya ejecuto todos los bloques que pusiste en el contenedor
+SI NO SUPERO LA LONGITUD
+
+
+
+
+
+
+
+
+
 
