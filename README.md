@@ -1,17 +1,10 @@
 # Proyecto-Taller-2025-Butler-Robot
 
-El proyecto consiste en Robot en versión educativa que puede ser programado mediante una aplicación con bloques tipo Scratch que usan los chicos de primaria.Nuestro proyecto esta está diseñado como una plataforma para enseñar programación y robótica de forma interactiva y divertida.
+Nuestro proyecto es un robot educativo que se programa desde una aplicación parecida a Scratch, la misma que usan chicos de primaria para aprender a programar. La idea es que sea divertido, fácil de usar y que cualquiera pueda aprender robótica y programación con él.
 
-Funciona con un Arduino Nano conectado a motores y servos para el movimiento, un módulo Bluetooth para la comunicación con la app, y piezas impresas en 3D. La aplicación permite controlar el robot y programar acciones sin necesidad de escribir código tradicional.
+El robot usa un Arduino Nano que controla motores y servos para moverse, un módulo Bluetooth para conectarse con la app y piezas hechas en impresión 3D. Desde la aplicación se pueden controlar sus movimientos y programar acciones sin tener que escribir código complicado.
 
-El objetivo es ofrecer una herramienta accesible y atractiva que fomente el pensamiento lógico y computacional, acercando la robótica y la programación a personas de todas las edades. El diseño es económico, fácil de replicar y pensado para que cualquiera pueda montarlo.
+Queremos que sea accesible y atractivo, para que cualquiera, sin importar la edad, pueda aprender a programar y pensar de forma lógica. Además, es barato, fácil de armar y se puede reproducir con herramientas simples.
 
-Beneficia a:
+Este robot ayuda a estudiantes y profesores en las clases, a los fanáticos de la robótica que quieren probar cosas nuevas, a padres e hijos que buscan aprender y divertirse juntos, y también a cualquier principiante que no sepa programar pero quiera empezar usando bloques.
 
-Estudiantes y docentes: facilita la enseñanza en clases y talleres.
-
-Aficionados a la robótica: permite experimentar con hardware programable.
-
-Padres e hijos: una forma divertida de introducirse en la tecnología.
-
-Principiantes: la interfaz por bloques elimina la barrera de la sintaxis.
