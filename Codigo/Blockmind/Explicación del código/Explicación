@@ -35,6 +35,7 @@ ESTE PROCESO SE DEBERA REPETIR CON TODOS LOS BLOQUES QUE HAYAMOS HECHO
 CAPTURA Nº 4:
 Al apretar ejecutar se comprueba si el bluetooth esta conectado
 Verifica si la lista esta vacia y confirma si el inicio esta al principio de la programacion
+Y si el fin se encuentra al final
 SINO CUMPLE ALGUNA DE ESTAS COSAS 
 Se muestra un mensaje de error detallando el porque no se va a ejecutar el programa
 SI CUMPLE TODOS LOS REQUISITOS
@@ -46,6 +47,16 @@ Cada vez que pase 1s compara si el indice supero a la cantidad de bloques que es
 SI SUPERO LA LONGITUD
 El programa se detiene indicando que ya ejecuto todos los bloques que pusiste en el contenedor
 SI NO SUPERO LA LONGITUD
+Compara el texto que esta dentro de la lista y dependiendo cual sea manda una señal al arduino
+Haciendo q este la reciba y ejecute lo que el programador haya puesto 
+
+CAPTURA Nº 6:
+Al apretar un boton clonado obtenes el texto que esta dentro del mismo si el bloque se encuentra en
+La lista entonces se elimina el bloque de la parte de programacion y se remueve el mismo bloque
+De la lista restandole -1 al contador para mantener el orden correcto de los ID únicos
+
+
+
 
 
 
