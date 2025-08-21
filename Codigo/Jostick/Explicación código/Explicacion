@@ -1,1 +1,26 @@
+Captura N° 0: 
+Esta parte del codigo es la que se ejecuta al iniciar la pantalla "Botonera" de la App
+Lo que hacemos es configurar un temporizador que llega hasta 1s y lo se desactivamos
+Para que prenda unicamente cuando nosotros queramos tambien poniendo como elementos del 
+Listpicker todos los dispositivos bluetooth que se hayan conectado alguna vez al celular
+
+Captura N° 1:
+Cuando elegimos un dispositivo en el listpicker la app se conecta a ese dispositivo y aparece 
+La imagen de bluetooth en verde para mostrar que la conexión fue exitosa
+En ese momento se ocultan los demás textos que ya no hacen falta
+Cuando el temporizador haya llegado a 1s este se desactiva
+Y cuando apretemos en el icono de la casa vamos a ir al menu de inicio donde podes elegir si queres
+Ir a programar o a la botonera
+
+Captura N° 2:
+Cuando movamos el analogico el programa va a preguntar si el bluetooth esta conectado
+SI NO ESTA CONECTADO
+Te tira un error mostrando que el bluetooth no esta conectado y activa el temporizador no dejando
+Que hagas nada hasta que pase 1s dejando q te puedas conectar para empezar a usarlo
+SI ESTA CONECTADO
+Entonces el programa detecta en base a donde muevas el analogico donde deberia ir el robot
+Si lo moves a -60 entonces envia un comando al arduino q tiene q ir a la izquierda 
+Y asi sucesivamente con todos los movimientos (Arriba,Abajo y derecho)
+
+
 
