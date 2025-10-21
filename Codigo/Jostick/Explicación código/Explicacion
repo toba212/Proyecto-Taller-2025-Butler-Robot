@@ -22,5 +22,12 @@ Entonces el programa detecta en base a donde muevas el analogico donde deberia i
 Si lo moves a -60 entonces envia un comando al arduino q tiene q ir a la izquierda 
 Y asi sucesivamente con todos los movimientos (Arriba,Abajo y derecho)
 
+Creamos dos variables, una para cada slider.
+Cuando el slider cambia de posición, el label (texto) muestra los grados en los que se encuentra el servo.
+El valor de la variable ultValor se actualiza constantemente.
+Cuando soltás el slider, el número en el que lo dejaste se envía por Bluetooth al Arduino, 
+Haciendo que el robot mueva los brazos o la parte correspondiente, según qué slider hayas movido.
+
+
 
 
