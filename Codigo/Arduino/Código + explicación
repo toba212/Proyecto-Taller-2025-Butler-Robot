@@ -1,1 +1,192 @@
+#include <Servo.h>
+#include <SoftwareSerial.h>
+
+// ======== CONFIGURACIÓN BLUETOOTH ========
+SoftwareSerial BT(10, 11); // RX, TX
+
+// ======== CONFIGURACIÓN DE SERVOS ========
+Servo servoBrazos;  // Servo 1 (brazos)
+Servo servoTorso;   // Servo 2 (cadera / torso)
+
+int anguloBrazo = 60;   // Posición inicial del brazo
+int anguloTorso = 95;   // Posición inicial del torso
+bool brazoEnCero = false;
+
+// ======== CONFIGURACIÓN DE MOTORES (DRV8833) ========
+// Motor A
+#define AIN1 2
+#define AIN2 3
+// Motor B
+#define BIN1 4
+#define BIN2 5
+
+// ======== VARIABLES ========
+String comando = "";
+bool moviendo = false;
+unsigned long tiempoInicioMovimiento = 0;
+
+// ======== SETUP ========
+void setup() {
+  Serial.begin(9600);
+  BT.begin(9600);
+
+  // Motores
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(BIN1, OUTPUT);
+  pinMode(BIN2, OUTPUT);
+
+  // Servos
+  servoBrazos.attach(6);
+  servoTorso.attach(7);
+  servoBrazos.write(anguloBrazo);
+  servoTorso.write(anguloTorso);
+
+  detenerMotores();
+
+  Serial.println("🤖 Robot listo para recibir comandos por Bluetooth...");
+  Serial.println("Conectá la app y enviá texto (A,B,C,D,E,G,izquierda,derecha,etc).");
+}
+
+// ======== FUNCIONES DE MOVIMIENTO ========
+void detenerMotores() {
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, LOW);
+  moviendo = false;
+}
+
+void avanzar() {
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, HIGH);
+  moviendo = true;
+  tiempoInicioMovimiento = millis();
+}
+
+void retroceder() {
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  digitalWrite(BIN1, HIGH);
+  digitalWrite(BIN2, LOW);
+  moviendo = true;
+  tiempoInicioMovimiento = millis();
+}
+
+void girarDerecha() {
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, HIGH);
+  moviendo = true;
+  tiempoInicioMovimiento = millis();
+}
+
+void girarIzquierda() {
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, HIGH);
+  digitalWrite(BIN2, LOW);
+  moviendo = true;
+  tiempoInicioMovimiento = millis();
+}
+
+// ======== LOOP PRINCIPAL ========
+void loop() {
+  // Leer del módulo Bluetooth
+  if (BT.available()) {
+    comando = BT.readStringUntil('\n');
+    comando.trim();
+
+    Serial.print("📩 Comando recibido: ");
+    Serial.println(comando);
+
+    // ======== SERVO DE BRAZOS ========
+    if (comando == "A") {
+      if (brazoEnCero) {
+        servoBrazos.write(60);
+        brazoEnCero = false;
+      } else {
+        servoBrazos.write(0);
+        brazoEnCero = true;
+      }
+    }
+
+    // ======== SERVO DE TORSO ========
+    else if (comando == "G") {
+      if (anguloTorso == 95) {
+        servoTorso.write(60);
+        anguloTorso = 60;
+        Serial.println("⬇️ Torso bajando a 60°");
+      } else {
+        servoTorso.write(95);
+        anguloTorso = 95;
+        Serial.println("⬆️ Torso volviendo a 95°");
+      }
+    }
+
+    // ======== MOVIMIENTOS ========
+    else if (comando == "B") {
+      retroceder();
+    }
+
+    else if (comando == "C") {
+      avanzar();
+    }
+
+    else if (comando == "D") {
+      girarDerecha();
+    }
+
+    else if (comando == "E") {
+      girarIzquierda();
+    }
+
+    // ======== DIRECCIONES JOYSTICK ========
+    else if (comando == "izquierda") {
+      girarIzquierda();
+    }
+    else if (comando == "derecha") {
+      girarDerecha();
+    }
+    else if (comando == "arriba") {
+      avanzar();
+    }
+    else if (comando == "abajo") {
+      retroceder();
+    }
+
+    // ======== DETENER MOVIMIENTO ========
+    else if (comando == "centro X" || comando == "centro Y") {
+      detenerMotores();
+    }
+
+    // ======== COMANDOS MANUALES (S1/S2) ========
+    else if (comando.startsWith("S1")) {
+      int valor = comando.substring(2).toInt();
+      servoBrazos.write(valor);
+      Serial.print("Servo 1 (brazos) -> ");
+      Serial.println(valor);
+    }
+
+    else if (comando.startsWith("S2")) {
+      int valor = comando.substring(2).toInt();
+      servoTorso.write(valor);
+      Serial.print("Servo 2 (torso) -> ");
+      Serial.println(valor);
+    }
+
+    else {
+      Serial.println("⚠️ Comando no reconocido.");
+    }
+  }
+
+  // ======== CONTROL AUTOMÁTICO DE FRENO (1 s) ========
+  if (moviendo && (millis() - tiempoInicioMovimiento >= 1000)) {
+    detenerMotores();
+    Serial.println("🛑 Motores detenidos automáticamente después de 1 s");
+  }
+}
 
