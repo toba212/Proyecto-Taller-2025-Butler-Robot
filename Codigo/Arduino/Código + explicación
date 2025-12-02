@@ -1,38 +1,69 @@
-// ======== LIBRERÍAS ========
+#include <SoftwareSerial.h> 
 #include <Servo.h>
-#include <SoftwareSerial.h>
 
-// ======== BLUETOOTH ========
-// BT conectado en: RX=11, TX=9
-SoftwareSerial BT(11, 9);
+// ======================================================
+// ===============  BLUETOOTH HC-05  =====================
+// ======================================================
+//
+// El robot recibe órdenes desde un CELULAR por Bluetooth.
+// El módulo HC-05 le manda letras al Arduino.
+// Este cableado permite que Arduino “escuche” esas letras.
+//
+// HC-05 TX --> Pin 7 del Arduino  (Arduino recibe datos)
+// HC-05 RX --> Pin 6 del Arduino  (Arduino envía datos)
+//
+// ATENCIÓN: RX siempre va con TX, y TX con RX.
+//
+SoftwareSerial BT(7, 6);  
 
-// ======== SERVOS ========
-Servo servoBrazos;  // Servo que mueve los brazos
-Servo servoTorso;   // Servo que mueve el torso
 
-// Posiciones iniciales
+
+// ======================================================
+// ======================  BRAZOS  =======================
+// ======================================================
+//
+// Este servo mueve los brazos del robot.
+// Solo hay UN servo, conectado al pin 8.
+//
+Servo servoBrazos;  // Servo en el pin 8
+
+// Posición inicial del brazo
 int anguloBrazo = 60;
-int anguloTorso = 95;
+bool brazoEnCero = false;   // Sirve para alternar movimiento (toggle)
 
-// Para alternar el movimiento del brazo
-bool brazoEnCero = false;
 
-// ======== MOTORES (DRV8833) ========
-// Motor izquierdo
-#define IN1 5
-#define IN2 4
-// Motor derecho
-#define IN3 3
-#define IN4 2
+// ======================================================
+// ===================  MOTORES DRV8833  =================
+// ======================================================
+//
+// El robot tiene dos ruedas.
+// Cada rueda se mueve con dos cables (IN1/IN2 e IN3/IN4).
+//
+// IN1 - IN2 controlan la RUEDA IZQUIERDA
+// IN3 - IN4 controlan la RUEDA DERECHA
+//
+// HIGH/LOW cambian si gira para adelante o atrás.
+//
+const int IN1 = 2;  // Izquierda
+const int IN2 = 3;
+const int IN3 = 4;  // Derecha
+const int IN4 = 5;
 
-// ======== VARIABLES ========
-String comando = "";               // Guarda el comando recibido
-bool moviendo = false;             // Si el robot está en movimiento
-unsigned long tiempoInicioMovimiento = 0; // Para auto-frenado
+// Para detener movimiento automático
+bool moviendo = false;
+unsigned long tiempoInicioMovimiento = 0;
+const unsigned long TIEMPO_MOVIMIENTO_MS = 1000; // 1 segundo
 
-// ======== FUNCIONES DE MOVIMIENTO ========
 
-// Apaga todos los motores
+
+// ======================================================
+// =============== FUNCIONES DE LOS MOTORES ===============
+// ======================================================
+//
+// Estas funciones hacen que el robot avance, retroceda, gire, etc.
+//
+
+// Apaga las dos ruedas
 void detenerMotores() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
@@ -41,131 +72,149 @@ void detenerMotores() {
   moviendo = false;
 }
 
-// Ambos motores para adelante
+// Las dos ruedas para ADELANTE
 void avanzar() {
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
-  moviendo = true;
-  tiempoInicioMovimiento = millis();
-}
-
-// Ambos motores para atrás
-void retroceder() {
+  // Rueda izquierda adelante
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
+
+  // Rueda derecha adelante
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+
   moviendo = true;
   tiempoInicioMovimiento = millis();
 }
 
-// Gira a la derecha (solo motor izquierdo avanza)
-void girarDerecha() {
+// Las dos ruedas para ATRÁS
+void retroceder() {
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
+
   digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
+  digitalWrite(IN4, HIGH);
+
   moviendo = true;
   tiempoInicioMovimiento = millis();
 }
 
-// Gira a la izquierda (solo motor derecho avanza)
+// Girar DERECHA: solo rueda izquierda avanza
+void girarDerecha() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+
+  moviendo = true;
+  tiempoInicioMovimiento = millis();
+}
+
+// Girar IZQUIERDA: solo rueda derecha avanza
 void girarIzquierda() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
+
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
+
   moviendo = true;
   tiempoInicioMovimiento = millis();
 }
 
-// ======== SETUP ========
-void setup() {
-  Serial.begin(9600);   // Monitor serie
-  BT.begin(9600);       // Bluetooth
 
-  // Pines de motores como salida
+
+// ======================================================
+// ==================  MOVER LOS BRAZOS ==================
+// ======================================================
+//
+// Cada vez que se recibe la letra 'A', los brazos cambian
+// entre dos posiciones (como si fueran ON/OFF).
+//
+void toggleBrazo() {
+  if (brazoEnCero) {
+    servoBrazos.write(60);   // posición 1
+    brazoEnCero = false;
+  } else {
+    servoBrazos.write(0);    // posición 2
+    brazoEnCero = true;
+  }
+}
+
+
+
+// ======================================================
+// ========================= SETUP =========================
+// ======================================================
+void setup() {
+
+  // Configurar motores como salida
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
 
-  // Conectar servos
-  servoBrazos.attach(6);
-  servoTorso.attach(7);
-
-  // Posiciones iniciales
+  // Conectar el servo de los brazos al pin 8
+  servoBrazos.attach(8);
   servoBrazos.write(anguloBrazo);
-  servoTorso.write(anguloTorso);
 
-  detenerMotores();
+  // Iniciar la comunicación con Bluetooth
+  Serial.begin(9600);
+  BT.begin(9600);
 
-  Serial.println("🤖 Robot listo para recibir comandos...");
+  detenerMotores(); // Robot empieza quieto
+
+  Serial.println("🤖 Robot listo para recibir comandos");
+
+  Serial.println("COMANDOS:");
+  Serial.println("  A = mover brazos");
+  Serial.println("  C = avanzar");
+  Serial.println("  B = retroceder");
+  Serial.println("  D = girar derecha");
+  Serial.println("  E = girar izquierda");
+  Serial.println("  X/Y = detener");
 }
 
-// ======== LOOP PRINCIPAL ========
+
+
+// ======================================================
+// ========================== LOOP ========================
+// ======================================================
 void loop() {
 
-  // Si llegó un comando por Bluetooth...
+  // Si llega una letra desde la app de Bluetooth...
   if (BT.available()) {
-    comando = BT.readStringUntil('\n'); // Leer hasta salto de línea
-    comando.trim();                     // Sacar espacios
-    comando.toUpperCase();              // Convertir todo a MAYÚSCULA
 
-    Serial.print("📩 Comando recibido: ");
-    Serial.println(comando);
+    char cmd = BT.read();   // Leemos el comando
+    Serial.print("Comando recibido: ");
+    Serial.println(cmd);
 
-    // ======== SERVOS ========
-
-    // Alternar brazo: comando "A"
-    if (comando == "A") {
-      if (brazoEnCero) {
-        servoBrazos.write(60);
-        brazoEnCero = false;
-      } else {
-        servoBrazos.write(0);
-        brazoEnCero = true;
-      }
+    // ----- SERVOS -----
+    if (cmd == 'A') {
+      toggleBrazo();
     }
 
-    // Alternar torso: comando "G"
-    else if (comando == "G") {
-      if (anguloTorso == 95) {
-        servoTorso.write(60);
-        anguloTorso = 60;
-      } else {
-        servoTorso.write(95);
-        anguloTorso = 95;
-      }
-    }
-
-    // ======== MOVIMIENTOS ========
-    else if (comando == "B" || comando == "ABAJO") {
-      retroceder();
-    }
-    else if (comando == "C" || comando == "ARRIBA") {
+    // ----- MOTORES -----
+    else if (cmd == 'C') {
       avanzar();
     }
-    else if (comando == "D" || comando == "DERECHA") {
+    else if (cmd == 'B') {
+      retroceder();
+    }
+    else if (cmd == 'D') {
       girarDerecha();
     }
-    else if (comando == "E" || comando == "IZQUIERDA") {
+    else if (cmd == 'E') {
       girarIzquierda();
     }
-    else if (comando == "CENTRO X" || comando == "CENTRO Y") {
+    else if (cmd == 'X' || cmd == 'Y') {
       detenerMotores();
-    }
-    else {
-      Serial.println("⚠️ Comando no reconocido.");
     }
   }
 
-  // ======== AUTO-FRENO ========
-  // Si pasó más de 1 segundo moviéndose, se frena solo
-  if (moviendo && (millis() - tiempoInicioMovimiento >= 1000)) {
+  // Se detiene solo después de 1 segundo para seguridad
+  if (moviendo && (millis() - tiempoInicioMovimiento >= TIEMPO_MOVIMIENTO_MS)) {
     detenerMotores();
-    Serial.println("🛑 Motores detenidos automáticamente después de 1 s");
+    Serial.println("🛑 Auto-freno (1 s)");
   }
 }
